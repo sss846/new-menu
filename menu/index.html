@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>今日点餐系统</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#667eea">
+  <meta name="description" content="帮助你选择今天吃什么的点餐系统">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="点餐系统">
+  <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+  <link rel="icon" href="icons/icon-192x192.png" type="image/png">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <h1>🍽️ 今日点餐系统</h1>
+      <p class="subtitle">选择你想要的美食</p>
+    </header>
+    
+    <main class="app-main">
+      <!-- 菜单区域 -->
+      <section class="menu-section">
+        <div class="menu-header">
+          <h2>📋 菜单选择</h2>
+          <span class="selection-info">已选择 <span id="selectedCount">0</span> 道菜</span>
+        </div>
+        
+        <!-- 主食区 -->
+        <div class="menu-category" id="category-staples">
+          <h3 class="category-title">
+            <span class="category-icon">🍚</span>
+            <span class="category-name">主食区</span>
+          </h3>
+          <div class="menu-items" id="staples-items"></div>
+        </div>
+        
+        <!-- 炒菜区 -->
+        <div class="menu-category" id="category-stirfry">
+          <h3 class="category-title">
+            <span class="category-icon">🥘</span>
+            <span class="category-name">炒菜区</span>
+          </h3>
+          <div class="menu-items" id="stirfry-items"></div>
+        </div>
+        
+        <!-- 水果区 -->
+        <div class="menu-category" id="category-fruits">
+          <h3 class="category-title">
+            <span class="category-icon">🍎</span>
+            <span class="category-name">水果区</span>
+          </h3>
+          <div class="menu-items" id="fruits-items"></div>
+        </div>
+      </section>
+      
+      <!-- 已选菜品区域 -->
+      <section class="selected-section">
+        <div class="selected-header">
+          <h2>🛒 已选菜品</h2>
+          <div class="selected-actions">
+            <button class="action-btn small" id="clearBtn">清空</button>
+            <button class="action-btn primary" id="orderBtn">确认点餐</button>
+          </div>
+        </div>
+        <div class="selected-list" id="selectedList">
+          <p class="empty-message">请从上方菜单中选择菜品</p>
+        </div>
+      </section>
+      
+      <!-- 点餐记录区域 -->
+      <section class="history-section">
+        <div class="history-header">
+          <h2>📊 点餐记录</h2>
+          <div class="history-stats">
+            <span>总点餐次数：<strong id="totalOrders">0</strong></span>
+          </div>
+        </div>
+        
+        <!-- 统计概览 -->
+        <div class="stats-overview" id="statsOverview">
+          <h3>📊 菜品统计</h3>
+          <div class="stats-grid" id="statsGrid">
+            <p class="empty-message">暂无点餐数据</p>
+          </div>
+        </div>
+        
+        <!-- 点餐明细 -->
+        <div class="order-history">
+          <h3>📝 点餐明细</h3>
+          <div class="order-list" id="orderList">
+            <p class="empty-message">暂无点餐记录</p>
+          </div>
+        </div>
+      </section>
+    </main>
+    
+    <footer class="app-footer">
+      <p>© 2026 今日点餐系统</p>
+    </footer>
+  </div>
+  
+  <!-- 确认点餐弹窗 -->
+  <div class="modal" id="confirmModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>确认点餐</h3>
+        <button class="modal-close" id="modalClose">×</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <p>您选择了以下菜品：</p>
+        <ul id="orderSummary"></ul>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn secondary" id="modalCancel">取消</button>
+        <button class="action-btn primary" id="modalConfirm">确认下单</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 菜品详情弹窗 -->
+  <div class="modal" id="detailModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>菜品详情</h3>
+        <button class="modal-close" id="detailModalClose">×</button>
+      </div>
+      <div class="modal-body" id="detailModalBody">
+        <div class="food-detail">
+          <div class="food-image" id="foodDetailImage">
+            <img src="" alt="菜品图片">
+          </div>
+          <div class="food-info">
+            <h4 id="foodDetailName"></h4>
+            <p class="food-category" id="foodDetailCategory"></p>
+            <p class="food-detail-text" id="foodDetailText"></p>
+            <p class="food-order-count" id="foodDetailOrderCount"></p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn primary" id="detailModalAddBtn">添加到订单</button>
+        <button class="action-btn secondary" id="detailModalCloseBtn">关闭</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
+  <script>
+    // 注册Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then((registration) => {
+            console.log('Service Worker 注册成功:', registration.scope);
+          })
+          .catch((error) => {
+            console.log('Service Worker 注册失败:', error);
+          });
+      });
+    }
+    
+    // 检测是否安装了PWA
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // 阻止Chrome 67及更早版本自动显示安装提示
+      e.preventDefault();
+      // 保存事件以便稍后触发
+      deferredPrompt = e;
+      // 可以在这里显示自定义的安装按钮
+      console.log('可以安装PWA了');
+    });
+    
+    // 处理PWA安装
+    function installPWA() {
+      if (deferredPrompt) {
+        // 显示安装提示
+        deferredPrompt.prompt();
+        // 等待用户响应
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('用户接受了安装');
+          } else {
+            console.log('用户拒绝了安装');
+          }
+          // 无论结果如何，清除保存的事件
+          deferredPrompt = null;
+        });
+      }
+    }
+    
+    // 检测PWA是否在独立模式下运行
+    function isPWA() {
+      return window.matchMedia('(display-mode: standalone)').matches || 
+             window.navigator.standalone || 
+             document.referrer.includes('android-app://');
+    }
+    
+    // 页面加载完成后检测
+    window.addEventListener('load', () => {
+      if (isPWA()) {
+        console.log('PWA已安装并在独立模式下运行');
+      }
+    });
+  </script>
+</body>
+</html>
